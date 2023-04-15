@@ -17,6 +17,11 @@
             <a href="airPollution.html"> Air Pollution</a>
         </nav>
 
+        <div class="place-container">
+            <div id="country" class="country"></div>
+            <div class="coord" id="coord"></div>
+        </div>
+        
         <form class="input-group">
             <span class="input-group-text" id="basic-addon1">Latitude</span>
             <input
@@ -43,30 +48,18 @@
             <button type="submit" onclick="getRegionWeatherData()"><i class='bx bx-search-alt-2'></i></button>
         </form>
     </header>
-    <div class="container">
+    <div class="container" >
         <div class="current-info">
-            <div class="date-container">
-                <div class="time" id="time">
-                    <span id="am-pm"></span>
-                </div>
-                <div class="date" id="date">
-                </div>
-
-                <div class="others" id="current-weather-items">
-                </div>
+            <div class="others" id="current-weather-items">
             </div>
 
-            <div class="place-container">
-                <div id="country" class="country"></div>
-                <div class="coord" id="coord"></div>
+            <div class="future-forecast">   
+                <div class="weather-forecast" id="weather-forecast">
+                    
+                </div>
             </div>
+            
         </div> 
-        
-        <div class="future-forecast">   
-            <div class="weather-forecast" id="weather-forecast">
-                </div>
-            </div>
-        </div>
     </div>
     
     <script>
@@ -75,7 +68,7 @@
         const coordElement = document.getElementById('coord');
         const weatherForecastElement = document.getElementById('weather-forecast');
 
-        const KEY ='ea320e37a556366ada15d74af69e09d38';
+        const KEY ='ea320e37a556366ada15d74af69e09d3';
         
         // let latitude = document.getElementById('latitude').value;
         // let longitude = document.getElementById('longitude').value;
@@ -121,9 +114,7 @@
             coordElement.innerHTML = data.coord.lat + '&#176N  ' + data.coord.lon +'&#176E';
 
             currentWeatherItemsElement.innerHTML = 
-            `<div class="weather-item">
-                <img src="http://openweathermap.org/img/wn//${data.weather[0].icon}@4x.png" alt="weather icon" class="main-icon">
-            </div>
+            `
             <div class="weather-item">
                 <div>Weather</div>
                 <div>${weather}</div>
