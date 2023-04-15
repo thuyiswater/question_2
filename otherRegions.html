@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>My Weather App</title>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html">Current Location</a>
+            <a href="otherRegions.html">Other Regions</a>
+            <a href="weatherMap.html">Weather Map</a>
+            <a href="airPollution.html"> Air Pollution</a>
+        </nav>
+
+        <form class="input-group">
+            <span class="input-group-text" id="basic-addon1">Lat</span>
+            <input
+              type="text"
+              class="form-control"
+              inputmode="numeric"
+              id="latitude"
+              placeholder="latitude"
+              aria-label="latitude"
+              aria-describedby="basic-addon1"
+              value=""
+            />
+            <span class="input-group-text" id="basic-addon1">Lon</span>
+            <input
+              type="text"
+              class="form-control"
+              inputmode="numeric"
+              id="longitude"
+              placeholder="longitude"
+              aria-label="longitude"
+              aria-describedby="basic-addon1"
+              value=""
+            />
+            <button type="submit" onclick="getRegionWeatherData()"><i class='bx bx-search-alt-2'></i></button>
+        </form>
+    </header>
+    <div class="container">
+        <div class="current-info">
+            <div class="date-container">
+                <div class="time" id="time">
+                    <span id="am-pm"></span>
+                </div>
+                <div class="date" id="date">
+                </div>
+
+                <div class="others" id="current-weather-items">
+                </div>
+            </div>
+
+            <div class="place-container">
+                <div id="country" class="country"></div>
+                <div class="coord" id="coord"></div>
+            </div>
+        </div> 
+        
+        <div class="future-forecast">   
+            <div class="weather-forecast" id="weather-forecast">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const currentWeatherItemsElement  = document.getElementById('current-weather-items');
+        const countryElement = document.getElementById('country');
+        const coordElement = document.getElementById('coord');
+        const weatherForecastElement = document.getElementById('weather-forecast');
+
+        const KEY ='ea320e37a556366ada15d74af69e09d38';
+        
+        let latitude = document.getElementById('latitude').value;
+        let longitude = document.getElementById('longitude').value;
+
+        function getRegionWeatherData(){
+            event.preventDefault();
+            let latitude = document.getElementById('latitude').value;
+            let longitude = document.getElementById('longitude').value;
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&APPID=${KEY}`).then(res => res.json()).then(data => {
+                console.log(data);
+                showWeatherData(data);
+                }) .catch(err => {
+                    const errorDialog = document.createElement('div');
+                    errorDialog.classList.add('error-dialog');
+                    errorDialog.textContent = `An error occurred: ${err.message}`;
+                    document.body.appendChild(errorDialog);
+                }) 
+
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${KEY}`).then(res => res.json()).then(data => {
+                showWeatherForecast(data);
+                }) .catch(err => {
+                    const errorDialog = document.createElement('div');
+                    errorDialog.classList.add('error-dialog');
+                    errorDialog.textContent = `An error occurred: ${err.message}`;
+                    document.body.appendChild(errorDialog);
+                });
+        }
+
+        function showWeatherData(data){
+            let weather = data.weather[0].main;
+            let description = data.weather[0].description;
+            let temp = data.main.temp;
+            let humidity = data.main.humidity;
+            let pressure = data.main.pressure;
+            let windSpeed = data.wind.speed;
+            let sunrise = new Date(data.sys.sunrise * 1000).toTimeString();
+            let sunset = new Date(data.sys.sunset * 1000).toTimeString();
+
+            countryElement.innerHTML = data.name;
+            coordElement.innerHTML = data.coord.lat + '&#176N  ' + data.coord.lon +'&#176E';
+
+            currentWeatherItemsElement.innerHTML = 
+            `<div class="weather-item">
+                <img src="http://openweathermap.org/img/wn//${data.weather[0].icon}@4x.png" alt="weather icon" class="main-icon">
+            </div>
+            <div class="weather-item">
+                <div>Weather</div>
+                <div>${weather}</div>
+            </div>
+            <div class="weather-item">
+                <div>Weather Description</div>
+                <div>${description}</div>
+            </div>
+            <div class="weather-item">
+                <div>Temperature</div>
+                <div>${temp}&#176C</div>
+            </div>
+            <div class="weather-item">
+                <div>Humidity</div>
+                <div>${humidity}%</div>
+            </div>
+            <div class="weather-item">
+                <div>Pressure</div>
+                <div>${pressure}</div>
+            </div>
+            <div class="weather-item">
+                <div>Wind Speed</div>
+                <div>${windSpeed}</div>
+            </div>
+            <div class="weather-item">
+                <div>Sunrise</div>
+                <div>
+                    <span style="margin-left: 20px;">${sunrise}</span>
+                </div>
+            </div>
+            <div class="weather-item">
+                <div>Sunset</div>
+                <div>
+                    <span style="margin-left: 20px;">${sunset}</span>
+                </div>
+            </div>`;
+        }
+
+        function showWeatherForecast(data){
+            let forecast = '';
+            let days = data.list;
+
+            days.forEach((day, index) => {
+                if(index < 5){
+                    var time = day.dt_txt;
+                    var tempMax = day.main.temp_max;
+                    var tempMin = day.main.temp_min;
+                    
+                    forecast += `
+                        <div class="weather-forecast-item">
+                            <div class="time">${time}</div>
+                            <img src="http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png" alt="weather icon" class="w-icon">
+                            <div class="temp">Temp Max - ${tempMax}&#176;C</div>
+                            <div class="temp">Temp Min - ${tempMin}&#176;C</div>
+                        </div>`;
+                }
+            })
+            weatherForecastElement.innerHTML = forecast;
+        }
+    </script>
+</body>
+</html>
+

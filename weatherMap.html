@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>My Weather App</title>
+</head>
+
+<!-- nav bar -->
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html">Current Location</a>
+            <a href="otherRegions.html">Other Regions</a>
+            <a href="weatherMap.html">Weather Map</a>
+            <a href="airPollution.html"> Air Pollution</a>
+        </nav>
+    </header>
+    <div class="filter">
+        <select name="layer" id="layer" >
+            <option value="" disable>Please select a layer</option>
+            <option value="clouds_new">Clouds New</option>
+            <option value="precipitation_new">Precipitation New</option>
+            <option value="pressure_new">Pressure New</option>
+            <option value="wind_new">Wind New</option>
+            <option value="temp_new">Temperature New</option>
+        </select>
+    </div>
+    <div class="weather-map">
+    </div>
+    
+    <script>
+        const KEY ='ea320e37a556366ada15d74af69e09d3';
+        const weatherMapElement = document.querySelector('.weather-map');
+        const layerSelect = document.getElementById('layer');
+
+        function getRegionWeatherData() {
+            event.preventDefault();
+            const layer = layerSelect.value;
+            fetch(`https://tile.openweathermap.org/map/${layer}/0/0/0.png?appid=${KEY}`).then(res => {
+                console.log("fetch success");
+                const img = document.createElement('img');
+                img.src = res.url;
+
+                weatherMapElement.innerHTML = '';
+                weatherMapElement.appendChild(img);
+            }).catch(err => {
+                const errorDialog = document.createElement('div');
+                errorDialog.classList.add('error-dialog');
+                errorDialog.textContent = `An error occurred: ${err.message}`;
+                document.body.appendChild(errorDialog);
+            });  
+    }
+
+    layerSelect.addEventListener('change', function() {
+        console.log(layer);
+        getRegionWeatherData();
+    });
+    </script>
+</body>
+</html>
+

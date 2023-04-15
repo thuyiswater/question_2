@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>My Weather App</title>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html">Current Location</a>
+            <a href="otherRegions.html"> Other Regions</a>
+            <a href="weatherMap.html">Weather Map</a>
+            <a href="airPollution.html"> Air Pollution</a>
+        </nav>
+
+        <form class="input-group">
+            <span class="input-group-text" id="basic-addon1">Lat</span>
+            <input
+              type="text"
+              class="form-control"
+              inputmode="numeric"
+              id="latitude"
+              placeholder="latitude"
+              aria-label="latitude"
+              aria-describedby="basic-addon1"
+              value=""
+            />
+            <span class="input-group-text" id="basic-addon1">Lon</span>
+            <input
+              type="text"
+              class="form-control"
+              inputmode="numeric"
+              id="longitude"
+              placeholder="longitude"
+              aria-label="longitude"
+              aria-describedby="basic-addon1"
+              value=""
+            />
+            <button type="submit" onclick="getRegionAirPollutionData()"><i class='bx bx-search-alt-2'></i></button>
+        </form>
+    </header>
+    <div class="container">
+        <table>
+            <caption>Air Quality Index Table</caption>
+            <thead>
+                <tr>
+                    <th>Qualitative name</th>
+                    <th>Index</th>
+                    <th>SO2</th>
+                    <th>NO2</th>
+                    <th>PM10</th>
+                    <th>PM2.5</th>
+                    <th>O3</th>
+                    <th>CO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Good</td>
+                    <td>1</td>
+                    <td>0-20</td>
+                    <td>0-40</td>
+                    <td>0-20</td>
+                    <td>0-10</td>
+                    <td>0-60</td>
+                    <td>0-4400</td>
+                </tr>
+                <tr>
+                    <td>Fair</td>
+                    <td>2</td>
+                    <td>20-80</td>
+                    <td>40-70</td>
+                    <td>20-50</td>
+                    <td>10-25</td>
+                    <td>60-100</td>
+                    <td>4400-9400</td>
+                </tr>
+                <tr>
+                    <td>Moderate</td>
+                    <td>3</td>
+                    <td>80-250</td>
+                    <td>70-150</td>
+                    <td>50-100</td>
+                    <td>25-50</td>
+                    <td>100-140</td>
+                    <td>9400-12400</td>
+                </tr>
+                <tr>
+                    <td>Poor</td>
+                    <td>4</td>
+                    <td>250-350</td>
+                    <td>150-200</td>
+                    <td>100-200</td>
+                    <td>50-75</td>
+                    <td>140-180</td>
+                    <td>12400-15400</td>
+                </tr>
+                <tr>
+                    <td>Very Poor</td>
+                    <td>5</td>
+                    <td>&gt;350</td>
+                    <td>&gt;200</td>
+                    <td>&gt;200</td>
+                    <td>&gt;75</td>
+                    <td>&gt;180</td>
+                    <td>&gt;15400</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <span>Other parameters that do not affect the AQI calculation:</span> <br>
+            <span style="margin-left: 20px">- NH3: min value 0.1 - max value 200</span> <br>
+            <span style="margin-left: 20px">- NO: min value 0.1 - max value 100</span>
+
+        <div id="air-pollution" style="display: none;">
+
+        </div>
+    </div>
+
+    <script>
+        const currentWeatherItemsElement  = document.getElementById('air-pollution');
+
+        const KEY ='ea320e37a556366ada15d74af69e09d3';
+
+        function getRegionAirPollutionData() {
+            event.preventDefault();
+            let latitude = document.getElementById('latitude').value;
+            let longitude = document.getElementById('longitude').value;
+
+            fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&units=metric&APPID=${KEY}`).then(res => res.json()).then(data => {
+                console.log(data);
+                showRegionAirPollutionData(data);
+                }) .catch(err => {
+                    console.error(err);
+                }) 
+        }
+
+        function showRegionAirPollutionData(data) {
+            let co = data.list[0].components.co;
+            let no2 = data.list[0].components.no2;
+            let o3 = data.list[0].components.o3;
+            let so2 = data.list[0].components.so2;
+            let pm2_5 = data.list[0].components.pm2_5;
+            let pm10 = data.list[0].components.pm10;
+
+            currentWeatherItemsElement.innerHTML = 
+            `<div class="air-item">
+            <div class="air-attribute">CO: ${co}</div>
+            <div class="air-quality">
+                ${co <= 4400 ? 'Good' : co <=9400  ? 'Fair' :  co <= 12400 ? 'Moderate'  : co <= 15400 ? 'Poor' :'Very Poor'}
+            </div>
+            </div>
+            <div class="air-item">
+            <div class="air-attribute">NO2: ${no2}</div>
+            <div class="air-quality">
+                ${no2 <= 40 ? 'Good' : no2 <= 70 ? 'Fair' : no2 <= 150 ? 'Moderate' : no2 <= 200 ? 'Poor' : 'Very Poor'}
+            </div>
+            </div>
+            <div class="air-item">
+            <div class="air-attribute">O3: ${o3}</div>
+            <div class="air-quality">
+                ${o3 <= 60 ? 'Good' : o3 <= 100 ? 'Fair' : o3 <= 140 ? 'Moderate' : o3 <= 180 ? 'Poor' : 'Very Poor'}
+            </div>
+            </div>
+            <div class="air-item">
+            <div class="air-attribute">SO2: ${so2}</div>
+            <div class="air-quality">
+                ${so2 <= 20 ? 'Good' : so2 <= 80 ? 'Fair' : so2 <= 250 ? 'Moderate' : so2 <= 350 ? 'Poor' : 'Very Poor'}
+            </div>
+            </div>
+            <div class="air-item">
+            <div class="air-attribute">PM2.5: ${pm2_5}</div>
+            <div class="air-quality">
+                ${pm2_5 <= 10 ? 'Good' : pm2_5 <= 25 ? 'Fair' : pm2_5 <= 50 ? 'Moderate' : pm2_5 <= 75 ? 'Poor' : 'Very Poor'}
+            </div>
+            </div>
+            <div class="air-item">
+            <div class="air-attribute">PM10: ${pm10}</div>
+            <div class="air-quality">
+                ${pm10 <= 20 ? 'Good' : pm10 <= 50 ? 'Fair' : pm10 <= 100 ? 'Moderate' : pm10 <= 200 ? 'Poor' : 'Very Poor'}
+            </div>
+            </div>`;
+
+            currentWeatherItemsElement.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
