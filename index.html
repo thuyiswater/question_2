@@ -18,7 +18,7 @@
         </nav>
 
         <form class="input-group">
-            <span class="input-group-text" id="basic-addon1" >Lat</span>
+            <span class="input-group-text" id="basic-addon1" >Latitude</span>
             <input
               type="text"
               class="form-control"
@@ -30,7 +30,7 @@
               value=""
               disabled
             />
-            <span class="input-group-text" id="basic-addon1">Lon</span>
+            <span class="input-group-text" id="basic-addon1">Longitude</span>
             <input
               type="text"
               class="form-control"
@@ -65,14 +65,14 @@
         </div> 
         
         <div class="future-forecast">   
-            <div class="weather-forecast" id="weather-forecast">
+            <div class="weather-forecast" id="weather-forecast" >
                 </div>
             </div>
         </div>
     </div>
     
     <script>
-        const timeElement = document.getElementById('time');
+    const timeElement = document.getElementById('time');
     const dateElement  = document.getElementById('date');
     const currentWeatherItemsElement  = document.getElementById('current-weather-items');
     const countryElement = document.getElementById('country');
@@ -89,17 +89,16 @@
         const month = time.getMonth();
         const date = time.getDate();
         const dayIndex = time.getDay();
-        const hour = time.getHours();
-        const hoursIn12HrFormat = hour >= 13 ? hour %12: hour
+        const hours = time.getHours();
         const minutes = time.getMinutes();
-        const amOrpm = hour >=12 ? 'PM' : 'AM'
-
-        timeElement.innerHTML = (hoursIn12HrFormat < 10? '0'+hoursIn12HrFormat : hoursIn12HrFormat) + ':' + (minutes < 10? '0'+minutes: minutes)+ ' ' + `<span id="am-pm">${amOrpm}</span>`
+    
+        timeElement.innerHTML = (hours < 10? '0'+hours : hours) + ':' + (minutes < 10? '0'+minutes: minutes);
         dateElement.innerHTML = days[dayIndex] + ', ' + date + ' ' + months[month];
 
     }, 0);
 
     function getCurrentWeatherData() {
+        let clearErr = true;
         navigator.geolocation.getCurrentPosition((current) => {
             let latitude = current.coords.latitude;
             let longitude = current.coords.longitude;
@@ -109,19 +108,24 @@
             latitudeElement.value = latitude.toFixed(4);
             longitudeElement.value = longitude.toFixed(4);
 
-            //https://api.openweathermap.org/data/2.5/weather?lat=10.7151&lon=106.7123&exclude=hourly,daily&units=metric&appid=66ed3c2fe99f0652a7f0e17840e2fed8
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&APPID=${KEY}`).then(res => res.json()).then(data => {
+            //https://api.openweathermap.org/data/2.5/weather?lat=10.7151&lon=106.7123&exclude=hourly,daily&units=metric&appid=ea320e37a556366ada15d74af69e09d3
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&APPID=${KEY}`)
+            .then(res => res.json()).then(data => {
                 console.log(data);
                 showWeatherData(data);
             }) .catch(err => {
-                const errorDialog = document.createElement('div');
-                errorDialog.classList.add('error-dialog');
-                errorDialog.textContent = `An error occurred: ${err.message}`;
-                document.body.appendChild(errorDialog);
+                if(clearErr == true) {
+                    const errorDialog = document.createElement('div');
+                    errorDialog.classList.add('error-dialog');
+                    errorDialog.textContent = `An error occurred: ${err.message}`;
+                    document.body.appendChild(errorDialog);
+                    clearErr = false;
+                }
             }) 
 
-            //https://api.openweathermap.org/data/2.5/forecast?lat=10.7151&lon=106.7123&appid=66ed3c2fe99f0652a7f0e17840e2fed8
-            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${KEY}`).then(res => res.json()).then(data => {
+            //https://api.openweathermap.org/data/2.5/forecast?lat=10.7151&lon=106.7123&appid=ea320e37a556366ada15d74af69e09d3
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${KEY}`)
+            .then(res => res.json()).then(data => {
                 showWeatherForecast(data);
             }) .catch(err => {
                 const errorDialog = document.createElement('div');
@@ -148,14 +152,14 @@
 
         currentWeatherItemsElement.innerHTML = 
         `<div class="weather-item">
-            <img src="http://openweathermap.org/img/wn//${data.weather[0].icon}@4x.png" alt="weather icon" class="main-icon">
+            <img src="http://openweathermap.org/img/wn//${data.weather[0].icon}@4x.png" alt="weather icon" class="weather-icon">
         </div>
         <div class="weather-item">
             <div>Weather</div>
             <div>${weather}</div>
         </div>
         <div class="weather-item">
-            <div>Weather Description</div>
+            <div>Description</div>
             <div>${description}</div>
         </div>
         <div class="weather-item">
@@ -177,13 +181,13 @@
         <div class="weather-item">
             <div>Sunrise</div>
             <div>
-                <span style="margin-left: 20px;">${sunrise}</span>
+                <span style="margin-left: 20px">${sunrise}</span>
             </div>
         </div>
         <div class="weather-item">
             <div>Sunset</div>
             <div>
-                <span style="margin-left: 20px;">${sunset}</span>
+                <span>${sunset}</span>
             </div>
         </div>`;
     }
@@ -193,7 +197,7 @@
         let days = data.list;
 
         days.forEach((day, index) => {
-            if(index < 5){
+            if(index < 4){
                 var time = day.dt_txt;
                 var tempMax = day.main.temp_max;
                 var tempMin = day.main.temp_min;
@@ -202,8 +206,8 @@
                     <div class="weather-forecast-item">
                         <div class="time">${time}</div>
                         <img src="http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png" alt="weather icon" class="w-icon">
-                        <div class="temp">Temp Max - ${tempMax}&#176;C</div>
-                        <div class="temp">Temp Min - ${tempMin}&#176;C</div>
+                        <div class="temp">Maximum Temperature: ${tempMax}&#176;C</div>
+                        <div class="temp">Minimum Temperature: ${tempMin}&#176;C</div>
                     </div>`;
             }
         })

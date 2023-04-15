@@ -23,7 +23,7 @@
         </div>
         
         <form class="input-group">
-            <span class="input-group-text" id="basic-addon1">Lat</span>
+            <span class="input-group-text" id="basic-addon1">Latitude</span>
             <input
               type="text"
               class="form-control"
@@ -70,15 +70,16 @@
 
         const KEY ='ea320e37a556366ada15d74af69e09d3';
         
-        let latitude = document.getElementById('latitude').value;
-        let longitude = document.getElementById('longitude').value;
+        // let latitude = document.getElementById('latitude').value;
+        // let longitude = document.getElementById('longitude').value;
 
         function getRegionWeatherData(){
             event.preventDefault();
-            let latitude = document.getElementById('latitude').value;
-            let longitude = document.getElementById('longitude').value;
+            let lat = document.getElementById('latitude').value;
+            let long = document.getElementById('longitude').value;
 
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&APPID=${KEY}`).then(res => res.json()).then(data => {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,daily&units=metric&APPID=${KEY}`)
+            .then(res => res.json()).then(data => {
                 console.log(data);
                 showWeatherData(data);
                 }) .catch(err => {
@@ -88,7 +89,8 @@
                     document.body.appendChild(errorDialog);
                 }) 
 
-            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${KEY}`).then(res => res.json()).then(data => {
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=metric&appid=${KEY}`)
+            .then(res => res.json()).then(data => {
                 showWeatherForecast(data);
                 }) .catch(err => {
                     const errorDialog = document.createElement('div');
