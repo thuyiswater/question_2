@@ -21,7 +21,7 @@
 .navbar a {
     position: relative;
     font-size: 16px;
-    color: white;
+    color: #e50b0b;
     text-decoration: none;
     font-weight: 500;
     margin-right: 30px;
@@ -47,7 +47,7 @@
 }
 
 body{
-    background: url('./resource/background.png');
+    background: url('./resource/1540005.webp');
     background-repeat: no-repeat;
     background-size:cover;
     overflow:hidden;
@@ -58,7 +58,7 @@ body{
 
 .container{
     padding: 20px 70px;
-    color:#fff;
+    color:#e17cb5;
 }
 
 .current-info{
@@ -71,16 +71,14 @@ body{
     font-weight: 100;
 }
 .date-container .time{
-    font-size: 70px;
-}
-
-.date-container #am-pm{
-    font-size: 30px;
-    margin-left: 20px;
+    font-size: 100px;
+    margin-top: 40px;
+    font-weight: 200;
 }
 
 .date-container .date{
     font-size: 30px;
+    font-weight: 200;
 }
 
 .place-container{
@@ -95,6 +93,7 @@ body{
 .place-container .country{
     font-size: 30px;
     font-weight: 700;
+    margin-top: 100px;
 }
 
 .current-info .others{
@@ -110,16 +109,17 @@ body{
 .current-info .others .weather-item{
     display: flex;
     justify-content: space-between;
+    font-weight: 200;
 }
 
-.current-info .main-icon {
+.current-info .weather-icon {
     justify-content: center;
 }
 
 .current-weather-items {
     display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
 }
 
 
@@ -131,7 +131,7 @@ body{
     padding-bottom: 2px;
     margin-top: 5px;
     border: 1px solid #eee;
-    color: white;
+    color: rgb(168, 113, 113);
 }
 
 .input-group {
@@ -159,9 +159,8 @@ body{
 
 .future-forecast{
     background: transparent;
-    padding: 25px;
     position: fixed;
-    margin-left: 100px;
+    margin-left: 150px;
     bottom: 0;
     display: flex;
     color:white;
